@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Label Detection – Scenario Based</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page {
+        display: none;
+        padding: 40px;
+    }
+    .active {
+        display: block;
+    }
+
+
+    .compare-container {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 20px;
+        align-items: flex-start;
+    }
+
+    .product-box {
+        text-align: center;
+    }
+
+    .checklist-box {
+        background: #fff;
+        padding: 20px;
+        width: 280px;
+        text-align: left;
+        border-radius: 10px;
+        border: 2px solid #333;
+    }
+
+  img {
+    width: 260px;
+    height: 360px;
+    object-fit: contain;   /* contains full image */
+    background: #fff;      /* fills extra space with white */
+    border-radius: 10px;
+    border: 2px solid #333;
+    margin: 10px 0;
+}
+
+button {
+    padding: 12px 25px;
+    margin: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background: #72c9ee;      /* Light blue background */
+    color: #fff;              /* White text */             /* White text */
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+button:hover {
+    background: #025d82;      /* Slightly darker green on hover */
+    transform: translateY(-2px);  /* Lift effect */
+    box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+}
+
+button:active {
+    transform: translateY(0);  /* Press effect */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+</style>
+
+</head>
+<body>
+
+<!-- PAGE 1 -->
+<div id="page1" class="page active">
+    <h1>Label Detection</h1>
+    <p>Select a Product</p>
+    <button onclick="switchPage(1.5)">Continue</button>
+</div>
+
+<!-- PAGE 1.5 — CASE SELECTION -->
+<div id="page1_5" class="page">
+    <h1>Select a Product Case</h1>
+
+    <button onclick="selectScenario(0)">Case 1 – Maggi</button><br>
+    <button onclick="selectScenario(1)">Case 2 – Doritos</button><br>
+    <button onclick="selectScenario(2)">Case 3 – Dettol</button><br>
+    <button onclick="selectScenario(3)">Case 4 – Lay's</button><br>
+    <button onclick="selectScenario(4)">Case 5 – Bourbon</button><br>
+</div>
+
+<!-- PAGE 2 -->
+<div id="page2" class="page">
+    <h2>Find the Faults</h2>
+
+    <div class="compare-container">
+
+        <div class="product-box">
+            <h3>Original</h3>
+            <img id="originalImage">
+        </div>
+
+        <div class="product-box">
+            <h3>Fake</h3>
+            <img id="fakeImage">
+        </div>
+
+        <div class="checklist-box">
+            <h3>Select Faults</h3>
+            <form id="faultChecklist"></form>
+            <button onclick="submitFaults()">Submit</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- PAGE 3 -->
+<div id="page3" class="page">
+    <h1>Results</h1>
+    <h2 id="resultScore"></h2>
+    <button onclick="switchPage(1.5)">Continue</button>
+</div>
+
+<script>
+
+/* ----------------------------------------------------------------
+   SCENARIOS (MAGGI, DORITOS, DETTOL)
+-------------------------------------------------------------------*/
+
+const scenarios = [
+    {
+        // MAGGI
+        original: "images/maggie-org.png",
+        fake: "images/maggi-fake.png",
+
+           correctFaults: [
+        "Brand Title Variation",
+        "Cooking Duration Mismatch",
+        "Packaging Element Re-Tinting",
+        "Nutritional Marker Discoloration"
+    ],
+
+    checklist: [
+        "Surface Wear Indicators",
+        "Brand Title Variation",
+        "Print Sharpness Reduction",
+        "Cooking Duration Mismatch",
+        "Typography Style Inconsistency",
+        "Packaging Element Re-Tinting",
+        "Nutritional Marker Discoloration",
+        "Barcode Alignment Irregularity",
+        "Seal Authenticity Doubt"
+    ]
+    },
+    {
+        // DORITOS
+        original: "images/dori-org.png",
+        fake: "images/dori-fake.png",
+
+        correctFaults: [
+        "Title Hue Adjustment",
+        "Flavor Label Reclassification",
+        "Product Shape Substitution",
+        "Category Descriptor Alteration"
+    ],
+
+    checklist: [
+        "Barcode Spacing Distortion",
+        "Flavor Label Reclassification",
+        "Seal Authenticity Doubt",
+        "Product Shape Substitution",
+        "Title Hue Adjustment",
+        "Category Descriptor Alteration",
+        "Print Sharpness Reduction",
+        "Surface Wear Indicators",
+        "Typography Style Inconsistency"
+    ]
+    },
+    {
+        // DETTOL
+        original: "images/det-org.png",
+        fake: "images/det-fake.png",
+
+        
+    correctFaults: [
+        "Brand Identifier Revision",
+        "Assurance Statement Contradiction",
+        "Product State Mislabeling",
+        "Information Code Omission",
+        "Symbolic Emblem Alteration"
+    ],
+
+    checklist: [
+        "Typography Style Inconsistency",
+        "Symbolic Emblem Alteration",
+        "Information Code Omission",
+        "Barcode Alignment Irregularity",
+        "Product State Mislabeling",
+        "Surface Wear Indicators",
+        "Brand Identifier Revision",
+        "Assurance Statement Contradiction",
+        "Print Sharpness Reduction"
+    ]
+    },
+    {
+         // Chips
+        original: "images/lays-org.png",
+        fake: "images/lays-fake.png",
+
+         correctFaults: [
+        "Price Tag Anomaly",
+        "Primary Label Re-Tinting",
+        "Flavor Icon Desaturation",
+        "Product Visual Replacement",
+        "Variant Descriptor Mislabeling"
+    ],
+
+    checklist: [
+        "Flavor Icon Desaturation",
+        "Seal Authenticity Doubt",
+        "Price Tag Anomaly",
+        "Typography Style Inconsistency",
+        "Primary Label Re-Tinting",
+        "Variant Descriptor Mislabeling",
+        "Surface Wear Indicators",
+        "Product Visual Replacement",
+        "Print Sharpness Reduction"
+    ]
+    },   
+    {
+          // Bourbon
+        original: "images/bur-org.png",
+        fake: "images/bur-fake.png",
+
+        correctFaults: [
+        "Product Identity Discrepancy",
+        "Flavor Profile Substitution",
+        "Manufacturer Attribution Alteration",
+        "Offer Quantity Exaggeration",
+        "Label Ownership Reassignment"
+    ],
+
+    checklist: [
+        "Surface Wear Indicators",
+        "Flavor Profile Substitution",
+        "Offer Quantity Exaggeration",
+        "Typography Style Inconsistency",
+        "Label Ownership Reassignment",
+        "Product Identity Discrepancy",
+        "Manufacturer Attribution Alteration",
+        "Barcode Spacing Distortion",
+        "Print Sharpness Reduction"
+    ]
+    }    
+];
+
+let currentScenario = null;
+
+
+/* ------------------ SELECT SCENARIO (NO RANDOM) ------------------ */
+function selectScenario(index) {
+
+    if (!scenarios[index] || !scenarios[index].original) {
+        alert("This scenario is not available yet!");
+        return;
+    }
+
+    currentScenario = scenarios[index];
+
+    startGame();
+}
+
+
+/* ------------------ START GAME ------------------ */
+function startGame() {
+
+    // Load images
+    document.getElementById("originalImage").src = currentScenario.original;
+    document.getElementById("fakeImage").src = currentScenario.fake;
+
+    // Load checklist options
+    loadChecklist(currentScenario.checklist);
+
+    switchPage(2);
+}
+
+
+/* ------------------ LOAD CHECKLIST ------------------ */
+function loadChecklist(options) {
+    const container = document.getElementById("faultChecklist");
+    container.innerHTML = "";
+
+    options.forEach(opt => {
+        const id = "chk_" + opt.replace(/\s+/g, "_");
+
+        container.innerHTML += `
+            <label>
+                <input type="checkbox" value="${opt}" id="${id}" onclick="limitSelection(event)">
+                ${opt}
+            </label><br>
+        `;
+    });
+}
+
+
+/* ------------------ LIMIT TO MAX 6 SELECTIONS ------------------ */
+function limitSelection(event) {
+    const checked = document.querySelectorAll("#faultChecklist input:checked").length;
+
+    if (checked > 6) {
+        alert("You can select a maximum of 6 faults.");
+        event.target.checked = false;
+    }
+}
+
+
+/* ------------------ SUBMIT ANSWERS ------------------ */
+function submitFaults() {
+
+    const selected = [...document.querySelectorAll("#faultChecklist input:checked")]
+        .map(i => i.value);
+
+    const correct = currentScenario.correctFaults;
+
+    const correctCount = selected.filter(v => correct.includes(v)).length;
+
+    document.getElementById("resultScore").innerText =
+        `Correct Faults: ${correctCount} out of ${correct.length}`;
+
+    switchPage(3);
+}
+
+
+/* ------------------ SWITCH PAGE ------------------ */
+function switchPage(n) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+
+    document.getElementById("page" + String(n).replace(".", "_")).classList.add("active");
+}
+
+</script>
+
+</body>
+</html>
