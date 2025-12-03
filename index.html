@@ -132,6 +132,10 @@ button:active {
     <button onclick="switchPage(1.5)">Continue</button>
 </div>
 
+<div id="correctFaultList" 
+     style="margin-top:20px; font-size:18px; text-align:left; display:inline-block;">
+</div>
+
 <script>
 
 /* ----------------------------------------------------------------
@@ -335,10 +339,24 @@ function submitFaults() {
 
     const correctCount = selected.filter(v => correct.includes(v)).length;
 
+    // Score text
     document.getElementById("resultScore").innerText =
         `Correct Faults: ${correctCount} out of ${correct.length}`;
 
+    // Show full correct list
+    let html = "<h3>Correct Faults Were:</h3><ul>";
+
+    correct.forEach(fault => {
+        html += `<li style="margin:5px 0;">${fault}</li>`;
+    });
+
+    html += "</ul>";
+
+    document.getElementById("correctFaultList").innerHTML = html;
+
     switchPage(3);
+}
+
 }
 
 
@@ -353,6 +371,7 @@ function switchPage(n) {
 
 </body>
 </html>
+
 
 
 
