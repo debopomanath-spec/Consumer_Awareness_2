@@ -289,6 +289,10 @@ function selectScenario(index) {
 /* ------------------ START GAME ------------------ */
 function startGame() {
 
+    // FULL RESET for new session
+    document.getElementById("correctFaultList").innerHTML = "";
+    document.getElementById("resultScore").innerText = "";
+
     // Load images
     document.getElementById("originalImage").src = currentScenario.original;
     document.getElementById("fakeImage").src = currentScenario.fake;
@@ -298,6 +302,8 @@ function startGame() {
 
     switchPage(2);
 }
+
+
 
 
 /* ------------------ LOAD CHECKLIST ------------------ */
@@ -357,21 +363,28 @@ function submitFaults() {
     switchPage(3);
 }
 
-}
+
 
 
 /* ------------------ SWITCH PAGE ------------------ */
 function switchPage(n) {
     document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
 
+    // Clear past results when going back to case selection or gameplay
+    if (n === 1.5 || n === 2) {
+        document.getElementById("correctFaultList").innerHTML = "";
+        document.getElementById("resultScore").innerText = "";
+    }
+
     document.getElementById("page" + String(n).replace(".", "_")).classList.add("active");
 }
+
+
 
 </script>
 
 </body>
 </html>
-
 
 
 
